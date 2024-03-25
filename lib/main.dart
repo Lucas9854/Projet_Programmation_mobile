@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:application_comics/series_api.dart';
 import 'package:application_comics/series_response.dart';
 import 'package:application_comics/series_list_response.dart';
+import 'package:dio/dio.dart';
 
 void main() {
   runApp(const MyApp());
@@ -49,10 +50,9 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class SeriesBloc {
-  final _seriesController = StreamController<List<SeriesListResponse>>();
-  Stream<List<SeriesListResponse>> get seriesStream => _seriesController.stream;
+  final _seriesController = StreamController<List<String>>();
+  Stream<List<String>> get seriesStream => _seriesController.stream;
 
   SeriesBloc() {
     loadSeries();
@@ -60,22 +60,33 @@ class SeriesBloc {
 
   void loadSeries() async {
     try {
-      final seriesListResponse = await SeriesRequest().loadSeriesList('series_list');
-      _seriesController.add([seriesListResponse]); // Ajouter la réponse dans une liste
+      print('Chargement des séries en cours...');
+      final List<SeriesListResponse> seriesListResponse = await SeriesRequest().loadSeriesList('series_list');
+      print('hello');
+      if (seriesListResponse.isNotEmpty) {
+        print('Données de la réponse de l\'API : $seriesListResponse');
+
+        // Vous pouvez accéder à la liste et la traiter ici
+        final List<String> seriesNames = seriesListResponse.map((series) => series.name).toList();
+        // Utilisez seriesNames comme vous le souhaitez
+
+        _seriesController.add(seriesNames); // Mettez à jour le Stream avec les noms des séries
+      } else {
+        print('La réponse de l\'API est vide.');
+      }
     } catch (e) {
+      print('Erreur lors du chargement des séries : $e');
       _seriesController.addError('Erreur lors du chargement des séries');
     }
   }
-
-
-
-
 
 
   void dispose() {
     _seriesController.close();
   }
 }
+
+
 
 class Series extends StatefulWidget {
   const Series({Key? key}) : super(key: key);
@@ -99,23 +110,21 @@ class _SeriesState extends State<Series> {
       appBar: AppBar(
         title: const Text('Séries les plus populaires'),
       ),
-      body: StreamBuilder<List<SeriesListResponse>>(
-        stream: _seriesBloc.seriesStream,
+      body: StreamBuilder<List<String>>(
+        stream: _seriesBloc.seriesStream, // Utilisez le stream de titres de séries
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final seriesList = snapshot.data!;
+            final seriesTitles = snapshot.data!;
             return ListView.builder(
-              itemCount: seriesList.length,
+              itemCount: seriesTitles.length,
               itemBuilder: (context, index) {
-                final series = seriesList[index];
+                final title = seriesTitles[index];
                 return ListTile(
-                  title: Text(series.name),
-                  subtitle: Text('Nombre d\'épisodes: ${series.countOfEpisodes}'),
-                  leading: Image.network(series.image),
+                  title: Text(title),
                   // Vous pouvez personnaliser l'affichage des séries comme vous le souhaitez
                 );
               },
@@ -128,8 +137,6 @@ class _SeriesState extends State<Series> {
     );
   }
 }
-
-
 
 class Accueil extends StatelessWidget {
   const Accueil({Key? key}) : super(key: key);

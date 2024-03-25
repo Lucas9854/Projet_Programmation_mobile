@@ -21,23 +21,21 @@ class _SeriesAPI implements SeriesAPI {
   String? baseUrl;
 
   @override
-  Future<SeriesListResponse> loadSeriesList(
+  Future<List<SeriesListResponse>> loadSeriesList(
     String url,
     String apiKey,
     String format,
-    int limit,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'url': url,
       r'api_key': apiKey,
       r'format': format,
-      r'limit': limit,
     };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SeriesListResponse>(Options(
+        .fetch<List<dynamic>>(_setStreamType<List<SeriesListResponse>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -53,7 +51,10 @@ class _SeriesAPI implements SeriesAPI {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = SeriesListResponse.fromJson(_result.data!);
+    var value = _result.data!
+        .map((dynamic i) =>
+            SeriesListResponse.fromJson(i as Map<String, dynamic>))
+        .toList();
     return value;
   }
 
