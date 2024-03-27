@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
     "name": "mobile",
     "short_name": "mobile",
+=======
+    "name": "comics",
+    "short_name": "comics",
+>>>>>>> 39ac53102bd11fe9ef78673b3d33659f6bff62cc
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
