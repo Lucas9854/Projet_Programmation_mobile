@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:application_comics/series_api.dart';
-import 'package:application_comics/series_response.dart';
-import 'package:application_comics/series_list_response.dart';
+import 'package:application_comics/comics_api.dart';
+import 'package:application_comics/modele_API.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,9 +51,28 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class SeriesInfo {
+  final String name;
+  final String publisherName;
+  final int countOfEpisodes;
+  final String startYear;
+  final String imageUrl;
+  final String description;
+
+  SeriesInfo({
+    required this.name,
+    required this.publisherName,
+    required this.countOfEpisodes,
+    required this.startYear,
+    required this.imageUrl,
+    required this.description,
+  });
+}
+
 class SeriesBloc {
-  final _seriesController = StreamController<List<String>>();
-  Stream<List<String>> get seriesStream => _seriesController.stream;
+  final _seriesController = StreamController<List<SeriesInfo>>();
+  Stream<List<SeriesInfo>> get seriesStream => _seriesController.stream;
 
   SeriesBloc() {
     loadSeries();
@@ -62,15 +82,21 @@ class SeriesBloc {
     try {
       print('Chargement des séries en cours...');
       final List<SeriesListResponse> seriesListResponse = await SeriesRequest().loadSeriesList('series_list');
-      print('hello');
       if (seriesListResponse.isNotEmpty) {
-        print('Données de la réponse de l\'API : $seriesListResponse');
+        //print('Données de la réponse de l\'API : $seriesListResponse');
 
-        // Vous pouvez accéder à la liste et la traiter ici
-        final List<String> seriesNames = seriesListResponse.map((series) => series.name).toList();
-        // Utilisez seriesNames comme vous le souhaitez
+        final List<SeriesInfo> seriesInfoList = seriesListResponse.map((series) =>
+            SeriesInfo(
+              name: series.name,
+              publisherName: series.publisher?.name ?? '',
+              countOfEpisodes: series.countOfEpisodes,
+              startYear: series.startYear,
+              imageUrl: series.image?.screenUrl ?? '',
+              description: series.description??'',
+            )
+        ).toList();
 
-        _seriesController.add(seriesNames); // Mettez à jour le Stream avec les noms des séries
+        _seriesController.add(seriesInfoList);
       } else {
         print('La réponse de l\'API est vide.');
       }
@@ -79,7 +105,6 @@ class SeriesBloc {
       _seriesController.addError('Erreur lors du chargement des séries');
     }
   }
-
 
   void dispose() {
     _seriesController.close();
@@ -110,22 +135,35 @@ class _SeriesState extends State<Series> {
       appBar: AppBar(
         title: const Text('Séries les plus populaires'),
       ),
-      body: StreamBuilder<List<String>>(
-        stream: _seriesBloc.seriesStream, // Utilisez le stream de titres de séries
+      body: StreamBuilder<List<SeriesInfo>>(
+        stream: _seriesBloc.seriesStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final seriesTitles = snapshot.data!;
+            final List<SeriesInfo> seriesInfoList = snapshot.data!;
             return ListView.builder(
-              itemCount: seriesTitles.length,
+              itemCount: seriesInfoList.length,
               itemBuilder: (context, index) {
-                final title = seriesTitles[index];
+                final SeriesInfo seriesInfo = seriesInfoList[index];
                 return ListTile(
-                  title: Text(title),
-                  // Vous pouvez personnaliser l'affichage des séries comme vous le souhaitez
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(seriesInfo.name),
+                      Text('Publisher: ${seriesInfo.publisherName}'),
+                      Text('Episodes: ${seriesInfo.countOfEpisodes}'),
+                      Text('Start Year: ${seriesInfo.startYear}'),
+                      Text('Description: ${seriesInfo.description}'),
+                    ],
+                  ),
+                  leading: Image.network(
+                    seriesInfo.imageUrl,
+                    width: 80,
+                    height: 80,
+                  ),
                 );
               },
             );
@@ -134,9 +172,11 @@ class _SeriesState extends State<Series> {
           }
         },
       ),
+
     );
   }
 }
+
 
 class Accueil extends StatelessWidget {
   const Accueil({Key? key}) : super(key: key);
