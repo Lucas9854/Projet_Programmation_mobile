@@ -8,8 +8,8 @@ part of 'comics_api.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
-class _SeriesAPI implements SeriesAPI {
-  _SeriesAPI(
+class _ComicsAPI implements ComicsAPI {
+  _ComicsAPI(
     this._dio, {
     this.baseUrl,
   }) {
@@ -21,7 +21,7 @@ class _SeriesAPI implements SeriesAPI {
   String? baseUrl;
 
   @override
-  Future<List<SeriesListResponse>> loadSeriesList(
+  Future<List<ComicsResponse>> loadComicsList(
     String url,
     String apiKey,
     String format,
@@ -35,7 +35,118 @@ class _SeriesAPI implements SeriesAPI {
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result = await _dio
-        .fetch<List<dynamic>>(_setStreamType<List<SeriesListResponse>>(Options(
+        .fetch<List<dynamic>>(_setStreamType<List<ComicsResponse>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    var value = _result.data!
+        .map((dynamic i) => ComicsResponse.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
+  Future<List<SeriesResponse>> loadSeriesList(
+    String url,
+    String apiKey,
+    String format,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'url': url,
+      r'api_key': apiKey,
+      r'format': format,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<List<dynamic>>(_setStreamType<List<SeriesResponse>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    var value = _result.data!
+        .map((dynamic i) => SeriesResponse.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
+  Future<List<MoviesResponse>> loadMoviesList(
+    String url,
+    String apiKey,
+    String format,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'url': url,
+      r'api_key': apiKey,
+      r'format': format,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<List<dynamic>>(_setStreamType<List<MoviesResponse>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    var value = _result.data!
+        .map((dynamic i) => MoviesResponse.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
+  Future<List<CharactersResponse>> loadCharactersList(
+    String url,
+    String apiKey,
+    String format,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'url': url,
+      r'api_key': apiKey,
+      r'format': format,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<List<dynamic>>(_setStreamType<List<CharactersResponse>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -53,7 +164,7 @@ class _SeriesAPI implements SeriesAPI {
             ))));
     var value = _result.data!
         .map((dynamic i) =>
-            SeriesListResponse.fromJson(i as Map<String, dynamic>))
+            CharactersResponse.fromJson(i as Map<String, dynamic>))
         .toList();
     return value;
   }
