@@ -1,14 +1,15 @@
-<<<<<<< HEAD
 
+import 'package:application_comics/pages/details/details_comics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:application_comics/pages/details/liste_series.dart';
 import 'package:application_comics/pages/details/liste_comics.dart';
 import 'package:application_comics/pages/details/liste_films.dart';
 import 'package:application_comics/pages/details/details_serie_histoire.dart';
-=======
-import 'package:flutter/material.dart';
->>>>>>> 16cc88141fd076c01921b224fc2540300dcfa1de
+import 'package:application_comics/pages/details/details_comics.dart';
+import 'package:application_comics/pages/details/details_films.dart';
+
+
 
 void main() {
   runApp(const MyApp());
@@ -17,22 +18,22 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-<<<<<<< HEAD
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Appli Projet',
       debugShowCheckedModeBanner: false,
-      home: DetailSerieHistoire(), //ListeSeries ListeComics ListeFilms CHANGER EN FONCTION DE LA PAGE SOUHAITE, il faut les appeler lorsque l'on selectionne la page voulu
+      home: DetailFilmsHistoire(), //ListeSeries ListeComics ListeFilms CHANGER EN FONCTION DE LA PAGE SOUHAITE, il faut les appeler lorsque l'on selectionne la page voulu
+//DetailSerieHistoire DetailComicHistoire
+    );
+  }
 
-
-=======
   // This widget is the root of your application.
-  @override
+/**
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
+      theme: ThemeData(**/
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
@@ -48,20 +49,19 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    /**    colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
->>>>>>> 16cc88141fd076c01921b224fc2540300dcfa1de
+
     );
-  }
+  }**/
 }
 
-<<<<<<< HEAD
-=======
+/**
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
+**/
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -71,14 +71,14 @@ class MyHomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
+ /** final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-}
+}**/
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+//class _MyHomePageState extends State<MyHomePage> {
+  /**int _counter = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -145,9 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> 39ac53102bd11fe9ef78673b3d33659f6bff62cc
->>>>>>> 16cc88141fd076c01921b224fc2540300dcfa1de
+**/
+//}
