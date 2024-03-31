@@ -50,18 +50,21 @@ class SeriesResponse {
 @JsonSerializable()
 class MoviesResponse {
   @JsonKey(name: 'name')
-  final String name;
+  final String? name;
 
   @JsonKey(name: 'release_date')
-  final String releaseDate;
+  final String? releaseDate;
 
   @JsonKey(name: 'runtime')
-  final int runtime;
+  final String? runtime;
+
+  @JsonKey(name: 'description')
+  final String? description;
 
   @JsonKey(name: 'image')
   final ImageApi? image;
 
-  MoviesResponse(this.name, this.releaseDate , this.runtime, this.image);
+  MoviesResponse(this.name, this.releaseDate , this.runtime, this.description, this.image);
 
   factory MoviesResponse.fromJson(Map<String, dynamic> json) {
     final imageJson = json['image'];
@@ -69,9 +72,10 @@ class MoviesResponse {
 
 
     return MoviesResponse(
-      json['name'] as String,
-      json['releaseDate'] as String,
-      json['runtime'] as int,
+      json['name'] as String?,
+      json['release_date'] as String?,
+      json['runtime'] as String?,
+      json['description'] as String?,
       image,
 
     );
@@ -86,16 +90,16 @@ class MoviesResponse {
 @JsonSerializable()
 class ComicsResponse {
   @JsonKey(name: 'name')
-  final String name;
+  final String? name;
 
   @JsonKey(name: 'issue_number')
-  final String issuesNumber;
+  final String? issuesNumber;
 
   @JsonKey(name: 'volume')
   final Volume? volume;
 
   @JsonKey(name: 'cover_date')
-  final String coverDate;
+  final String? coverDate;
 
   @JsonKey(name: 'image')
   final ImageApi? image;
@@ -110,10 +114,10 @@ class ComicsResponse {
 
 
     return ComicsResponse(
-      json['name'] as String,
-      json['issuesNumber'] as String,
+      json['name'] as String?,
+      json['issue_number'] as String?,
       volume,
-      json['coverDate'] as String,
+      json['cover_date'] as String?,
       image,
     );
   }
@@ -125,19 +129,19 @@ class ComicsResponse {
 class CharactersResponse {
 
   @JsonKey(name: 'name')
-  final String name;
+  final String? name;
 
   @JsonKey(name: 'real_name')
-  final String realName;
+  final String? realName;
 
   @JsonKey(name: 'aliases')
-  final String alias;
+  final String? alias;
 
   @JsonKey(name: 'deck')
-  final String deck;
+  final String? deck;
 
   @JsonKey(name: 'gender')
-  final int gender;
+  final int? gender;
 
   @JsonKey(name: 'birth')
   final String? birth;
@@ -153,11 +157,11 @@ class CharactersResponse {
 
 
     return CharactersResponse(
-      json['name'] as String,
-      json['realName'] as String,
-      json['alias'] as String,
-      json['deck'] as String,
-      json['gender'] as int,
+      json['name'] as String?,
+      json['real_name'] as String?,
+      json['alias'] as String?,
+      json['deck'] as String?,
+      json['gender'] as int?,
       json['birth'] as String?,
       image,
     );
@@ -166,7 +170,40 @@ class CharactersResponse {
   Map<String, dynamic> toJson() => _$CharactersResponseToJson(this);
 }
 
-/* Classes utiles */
+@JsonSerializable()
+class EpisodesResponse {
+
+  @JsonKey(name: 'name')
+  final String? name;
+
+  @JsonKey(name: 'episode_number')
+  final String? episodeNumber;
+
+  @JsonKey(name: 'air_date')
+  final String? date;
+
+  @JsonKey(name: 'image')
+  final ImageApi? image;
+
+  EpisodesResponse(this.name, this.episodeNumber , this.date , this.image);
+
+  factory EpisodesResponse.fromJson(Map<String, dynamic> json) {
+    final imageJson = json['image'];
+    final ImageApi? image = imageJson != null ? ImageApi.fromJson(imageJson) : null;
+
+
+    return EpisodesResponse(
+      json['name'] as String?,
+      json['episode_number'] as String?,
+      json['air_date'] as String?,
+      image,
+    );
+  }
+
+  Map<String, dynamic> toJson() => _$EpisodesResponseToJson(this);
+}
+
+/* sous-classes */
 
 
 
@@ -193,7 +230,7 @@ class Publisher {
 @JsonSerializable()
 class ImageApi {
 
-  @JsonKey(name: 'screen_url')
+  @JsonKey(name: 'small_url')
   final String screenUrl;
 
   ImageApi(this.screenUrl);

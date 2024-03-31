@@ -37,6 +37,13 @@ abstract class ComicsAPI {
       @Query('api_key') String apiKey,
       @Query('format') String format,
       );
+
+  @GET('')
+  Future<List<CharactersResponse>> loadEpisodesList(
+      @Query('url') String url,
+      @Query('api_key') String apiKey,
+      @Query('format') String format,
+      );
 }
 
 class ComicsRequest {
@@ -158,6 +165,33 @@ class ComicsRequest {
       }
     } catch (e) {
       throw Exception('Failed to load characters list: $e');
+    }
+  }
+  Future<List<EpisodesResponse>> loadEpisodesList(String endpoint) async {
+    // Implémentez de manière similaire pour charger la liste des personnages
+    try {
+      final String apiKey = '07165e05c9d2ef5705474d1061cfd1df53b2719e';
+      final String apiUrl = 'https://api.formation-android.fr/comicvine';
+
+      final response = await _dio.get(
+        '$apiUrl?url=$endpoint&api_key=$apiKey&format=json',
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = response.data['results'];
+
+        if (jsonResponse is List) {
+          return jsonResponse
+              .map((json) => EpisodesResponse.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Expected a list of episodes from API');
+        }
+      } else {
+        throw Exception('Failed to load episodes list');
+      }
+    } catch (e) {
+      throw Exception('Failed to load episodes list: $e');
     }
   }
 

@@ -3,347 +3,356 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:application_comics/comics_api.dart';
 import 'package:application_comics/modele_API.dart';
+import "Series.dart";
+import "Comics.dart";
+import "Films.dart";
+import "Recherche.dart";
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
-
-final GoRouter _router = GoRouter(
-  routes: <RouteBase>[
-    GoRoute(
-      path: '/',
-      builder: (BuildContext context, GoRouterState state) {
-        return const Series();
-      },
-      routes: <RouteBase>[
-        GoRoute(
-          path: 'accueil',
-          builder: (BuildContext context, GoRouterState state) {
-            return const Accueil();
-          },
-        ),
-      ],
-    ),
-  ],
-);
-
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Comics app',
-      debugShowMaterialGrid: false,
-      debugShowCheckedModeBanner: false,
+    return MaterialApp(
+      title: 'Accueil Projet Flutter',
       theme: ThemeData(
-        primarySwatch: Colors.orange,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 0.0,
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        scaffoldBackgroundColor: Color(0xFF15232E), // Définition de l'arrière-plan
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Color(0xFF15232E), // Couleur de fond de la BottomNavigationBar
+          selectedItemColor: Colors.white, // Couleur des éléments sélectionnés
+          unselectedItemColor: Colors.grey, // Couleur des éléments non sélectionnés
         ),
-        fontFamily: 'Nunito',
       ),
-      routerConfig: _router,
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
     );
   }
 }
-
-class SeriesInfo {
-  final String name;
-  final String publisherName;
-  final int countOfEpisodes;
-  final String startYear;
-  final String imageUrl;
-  final String description;
-
-  SeriesInfo({
-    required this.name,
-    required this.publisherName,
-    required this.countOfEpisodes,
-    required this.startYear,
-    required this.imageUrl,
-    required this.description,
-  });
-}
-class MoviesInfo {
-  final String name;
-  final String releaseDate;
-  final int runtime;
-  final String imageUrl;
-
-  MoviesInfo({
-    required this.name,
-    required this.releaseDate,
-    required this.runtime,
-    required this.imageUrl,
-  });
-}
-class ComicsInfo {
-  final String name;
-  final String issuesNumber;
-  final Volume? volume;
-  final String coverDate;
-  final String imageUrl;
-
-  ComicsInfo({
-    required this.name,
-    required this.issuesNumber,
-    required this.volume,
-    required this.coverDate,
-    required this.imageUrl,
-  });
-}
-class CharactersInfo {
-  final String name;
-  final String realName;
-  final String alias;
-  final String deck;
-  final int gender;
-  final String? birth;
-  final String imageUrl;
-
-  CharactersInfo({
-    required this.name,
-    required this.realName,
-    required this.alias,
-    required this.deck,
-    required this.gender,
-    required this.birth,
-    required this.imageUrl,
-  });
-}
-
-
-class SeriesBloc {
-  final _seriesController = StreamController<List<SeriesInfo>>();
-  Stream<List<SeriesInfo>> get seriesStream => _seriesController.stream;
-
-  SeriesBloc() {
-    loadSeries();
-  }
-
-  void loadSeries() async {
-    try {
-      print('Chargement des séries en cours...');
-      final List<SeriesResponse> seriesListResponse =
-      await ComicsRequest().loadSeriesList('series_list');
-      if (seriesListResponse.isNotEmpty) {
-        final List<SeriesInfo> seriesInfoList = seriesListResponse.map((series) =>
-            SeriesInfo(
-              name: series.name,
-              publisherName: series.publisher?.name ?? '',
-              countOfEpisodes: series.countOfEpisodes,
-              startYear: series.startYear,
-              imageUrl: series.image?.screenUrl ?? '',
-              description: series.description ?? '',
-            )).toList();
-
-        _seriesController.add(seriesInfoList);
-      } else {
-        print('La réponse de l\'API est vide.');
-      }
-    } catch (e) {
-      print('Erreur lors du chargement des séries : $e');
-      _seriesController.addError('Erreur lors du chargement des séries');
-    }
-  }
-
-  void dispose() {
-    _seriesController.close();
-  }
-}
-class MoviesBloc {
-  final _moviesController = StreamController<List<MoviesInfo>>();
-  Stream<List<MoviesInfo>> get moviesStream => _moviesController.stream;
-
-  MoviesBloc() {
-    loadMovies();
-  }
-
-  void loadMovies() async {
-    try {
-      print('Chargement des films en cours...');
-      final List<MoviesResponse> moviesListResponse =
-      await ComicsRequest().loadMoviesList('movies');
-      if (moviesListResponse.isNotEmpty) {
-        final List<MoviesInfo> moviesInfoList = moviesListResponse.map((movies) =>
-            MoviesInfo(
-              name: movies.name,
-              releaseDate: movies.releaseDate,
-              runtime: movies.runtime,
-              imageUrl: movies.image?.screenUrl ?? '',
-            )).toList();
-
-        _moviesController.add(moviesInfoList);
-      } else {
-        print('La réponse de l\'API est vide.');
-      }
-    } catch (e) {
-      print('Erreur lors du chargement des séries : $e');
-      _moviesController.addError('Erreur lors du chargement des séries');
-    }
-  }
-
-  void dispose() {
-    _moviesController.close();
-  }
-}
-class ComicsBloc {
-  final _comicsController = StreamController<List<ComicsInfo>>();
-  Stream<List<ComicsInfo>> get comicsStream => _comicsController.stream;
-
-  ComicsBloc() {
-    loadComics();
-  }
-
-  void loadComics() async {
-    try {
-      print('Chargement des comics en cours...');
-      final List<ComicsResponse> comicsListResponse =
-      await ComicsRequest().loadComicsList('comics');
-      if (comicsListResponse.isNotEmpty) {
-        final List<ComicsInfo> comicsInfoList = comicsListResponse.map((comics) =>
-            ComicsInfo(
-              name: comics.name,
-              issuesNumber: comics.issuesNumber,
-              volume: comics.volume,
-              coverDate: comics.coverDate,
-              imageUrl: comics.image?.screenUrl ?? '',
-            )).toList();
-
-        _comicsController.add(comicsInfoList);
-      } else {
-        print('La réponse de l\'API est vide.');
-      }
-    } catch (e) {
-      print('Erreur lors du chargement des comics : $e');
-      _comicsController.addError('Erreur lors du chargement des comics');
-    }
-  }
-
-  void dispose() {
-    _comicsController.close();
-  }
-}
-
-class CharactersBloc {
-  final _charactersController = StreamController<List<CharactersInfo>>();
-  Stream<List<CharactersInfo>> get charactersStream => _charactersController.stream;
-
-  CharactersBloc() {
-    loadCharacters();
-  }
-
-  void loadCharacters() async {
-    try {
-      print('Chargement des personnages en cours...');
-      final List<CharactersResponse> charactersListResponse =
-      await ComicsRequest().loadCharactersList('characters');
-      if (charactersListResponse.isNotEmpty) {
-        final List<CharactersInfo> charactersInfoList = charactersListResponse.map((character) =>
-            CharactersInfo(
-              name: character.name,
-              realName: character.realName,
-              alias: character.alias,
-              deck: character.deck,
-              gender: character.gender,
-              birth: character.birth,
-              imageUrl: character.image?.screenUrl ?? '',
-            )).toList();
-
-        _charactersController.add(charactersInfoList);
-      } else {
-        print('La réponse de l\'API est vide.');
-      }
-    } catch (e) {
-      print('Erreur lors du chargement des personnages : $e');
-      _charactersController.addError('Erreur lors du chargement des personnages');
-    }
-  }
-
-  void dispose() {
-    _charactersController.close();
-  }
-}
-
-
-class Series extends StatefulWidget {
-  const Series({Key? key}) : super(key: key);
-
-  @override
-  _SeriesState createState() => _SeriesState();
-}
-
-class _SeriesState extends State<Series> {
-  late final SeriesBloc _seriesBloc = SeriesBloc();
-
-  @override
-  void dispose() {
-    _seriesBloc.dispose();
-    super.dispose();
-  }
-
+class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Séries les plus populaires'),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0), // Ajoutez un padding autour
+              color: Color(0xFF15232E), // Assurez-vous que la couleur de fond correspond
+              height: 150.0, // Définissez une hauteur fixe pour le conteneur
+              width: double.infinity, // S'étend sur toute la largeur disponible
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft, // Aligner le texte à gauche
+                    child: Text(
+                      'Bienvenue !',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35.0,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: -65, // Décaler vers le bas dans le Stack
+                    child: SvgPicture.asset('assets/astronaut.svg', height: 170), // Image de l'astronaute
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            _buildSection(context, 'Séries populaires', SeriesList(), () => Navigator.push(context, MaterialPageRoute(builder: (context) => SeriesPage()))),
+            _buildSection(context, 'Comics populaires', ComicsList(), () => Navigator.push(context, MaterialPageRoute(builder: (context) => ComicsPage()))),
+            _buildSection(context, 'Films populaires', FilmList(), () => Navigator.push(context, MaterialPageRoute(builder: (context) => MoviesPage()))),
+            SizedBox(height: 20),
+          ],
+        ),
       ),
-      body: StreamBuilder<List<SeriesInfo>>(
-        stream: _seriesBloc.seriesStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Erreur: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final List<SeriesInfo> seriesInfoList = snapshot.data!;
-            return ListView.builder(
-              itemCount: seriesInfoList.length,
-              itemBuilder: (context, index) {
-                final SeriesInfo seriesInfo = seriesInfoList[index];
-                return ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(seriesInfo.name),
-                      Text('Publisher: ${seriesInfo.publisherName}'),
-                      Text('Episodes: ${seriesInfo.countOfEpisodes}'),
-                      Text('Start Year: ${seriesInfo.startYear}'),
-                      Text('Description: ${seriesInfo.description}'),
-                    ],
-                  ),
-                  leading: Image.network(
-                    seriesInfo.imageUrl,
-                    width: 80,
-                    height: 80,
-                  ),
-                );
-              },
-            );
-          } else {
-            return const SizedBox(); // Placeholder
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_home.svg', width: 24, height: 24),
+            label: 'Accueil',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_series.svg', width: 24, height: 24),
+            label: 'Séries',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_comics.svg', width: 24, height: 24),
+            label: 'Comics',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_movies.svg', width: 24, height: 24),
+            label: 'Films',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_search.svg', width: 24, height: 24),
+            label: 'Recherche',
+          ),
+        ],
+        backgroundColor: Color(0xFF0F1E2B),
+        selectedItemColor: Color(0xFF12273C),
+        unselectedItemColor: Color(0xFF778BA8),
+        type: BottomNavigationBarType.fixed,
+        onTap: (int index) {
+          // Navigation en fonction de l'index sélectionné
+          switch (index) {
+            case 0: // Accueil
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyApp()), // Naviguer vers la page d'accueil
+              );
+              break;
+            case 1:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SeriesPage()), // Naviguer vers la page d'accueil
+              );
+              break;
+            case 2: // Comics
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ComicsPage()), // Naviguer vers la page des comics
+              );
+              break;
+            case 3: // Films
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MoviesPage()), // Naviguer vers la page des comics
+              );
+              break;
+            case 4: // Recherche
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchScreen()), // Naviguer vers la page des comics
+              );
+              break;
+            default:
           }
         },
       ),
     );
   }
+
+  Widget _buildSection(BuildContext context, String title, Widget content,VoidCallback onPressed) {
+    return Container(
+      color: Color(0xFF1E3243),
+      child: Column(
+        children: [
+          SectionHeader(title: title, onPressed: onPressed),
+          content,
+        ],
+      ),
+    );
+  }
+}
+class SeriesList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 150.0,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: <Widget>[
+          SeriesItem(title: 'Titans', assetName: 'S1.png'),
+          SeriesItem(title: 'Young Justice: Outsiders', assetName: 'S2.png'),
+          SeriesItem(title: 'Autre série', assetName: 'S3.jpeg'),
+          // Ajoutez d'autres éléments ici si nécessaire
+        ],
+      ),
+    );
+  }
 }
 
-class Accueil extends StatelessWidget {
-  const Accueil({Key? key}) : super(key: key);
+class SectionHeader extends StatelessWidget {
+  final String title;
+  final VoidCallback onPressed;
+  SectionHeader({required this.title, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Row(
+        children: <Widget>[
+          Container(
+            width: 10.0,
+            height: 10.0,
+            decoration: BoxDecoration(
+              color: Color(0xFFFF8100),
+              shape: BoxShape.circle,
+            ),
+          ),
+          SizedBox(width: 8.0),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          Spacer(),
+          TextButton(
+            child: Text('Voir plus'),
+            onPressed: onPressed,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white, // Use foregroundColor instead of primary for text color
+              backgroundColor: Color(0xFF0F1921),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ComicsList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 150.0,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: <Widget>[
+          ComicsItem(title: 'The Silver Surfer', assetName: 'C1.png'),
+          ComicsItem(title: 'Wonder Woman #89', assetName: 'C2.png'),
+          ComicsItem(title: 'Autre comic', assetName: 'C3.jpeg'), // Supposons que C3.png soit un autre asset
+          // Ajoutez d'autres éléments ici si nécessaire
+        ],
+      ),
+    );
+  }
+}
+class FilmList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 150.0,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: <Widget>[
+          FilmItem(title: 'Iron Man', assetName: 'F1.png'),
+          FilmItem(title: 'X-Men', assetName: 'F2.png'),
+          FilmItem(title: 'Autre film', assetName: 'F3.jpeg'),
+          // Ajoutez d'autres éléments ici si nécessaire
+        ],
+      ),
+    );
+  }
+}
+class SeriesItem extends StatelessWidget {
+  final String title;
+  final String assetName;
+  SeriesItem({required this.title, required this.assetName});
+  @override
+  Widget build(BuildContext context) {
+    // Utiliser un Container pour définir des dimensions fixes
+    return Container(
+      width: 160.0, // Largeur fixe pour chaque élément
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        color: Color(0xFF284C6A),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [Text('Ecran 2 !')],
+          mainAxisSize: MainAxisSize.min, // Cela garantit que la colonne prend la hauteur minimale de son contenu
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+              child: Image.asset('assets/$assetName', height: 100), // Hauteur fixe pour l'image
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                title,
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+class ComicsItem extends StatelessWidget {
+  final String title;
+  final String assetName;
+  ComicsItem({required this.title, required this.assetName});
+  @override
+  Widget build(BuildContext context) {
+    // Utiliser un Container pour définir des dimensions fixes
+    return Container(
+      width: 160.0, // Largeur fixe pour chaque élément
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        color: Color(0xFF284C6A),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Pour que la colonne prenne la hauteur minimale de son contenu
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+              child: Image.asset('assets/$assetName', height: 100), // Hauteur fixe pour l'image
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                title,
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.center, // Centrer le titre
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+class FilmItem extends StatelessWidget {
+  final String title;
+  final String assetName;
+  FilmItem({required this.title, required this.assetName});
+  @override
+  Widget build(BuildContext context) {
+    // Utiliser un Container pour définir des dimensions fixes
+    return Container(
+      width: 160.0, // Largeur fixe pour chaque élément
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        color: Color(0xFF284C6A),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Pour que la colonne prenne la hauteur minimale de son contenu
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+              child: Image.asset('assets/$assetName', height: 100), // Hauteur fixe pour l'image
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                title,
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.center, // Centrer le titre
+              ),
+            ),
+          ],
         ),
       ),
     );
