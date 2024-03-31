@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:application_comics/comics_api.dart';
 import 'package:application_comics/modele_API.dart';
-import "Series.dart";
-import "Comics.dart";
-import "Films.dart";
-import "Recherche.dart";
+import 'Series.dart';
+import 'Comics.dart';
+import 'Films.dart';
+import 'Recherche.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,20 +14,36 @@ import 'package:flutter_svg/flutter_svg.dart';
 void main() {
   runApp(MyApp());
 }
+
+class AstronautLogo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      'res/svg/astronaut.svg',
+      semanticsLabel: 'Logo ',
+      height: 170, // La hauteur que vous souhaitez pour votre logo
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Accueil Projet Flutter',
+      title: 'Accueil',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        scaffoldBackgroundColor: Color(0xFF15232E), // Définition de l'arrière-plan
+        scaffoldBackgroundColor: Color(0xFF15232E), //Couleur arriere plan
+
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFF15232E), // Couleur de fond de la BottomNavigationBar
+          backgroundColor: Color(0xFF15232E), // Couleur NavBar
           selectedItemColor: Colors.white, // Couleur des éléments sélectionnés
-          unselectedItemColor: Colors.grey, // Couleur des éléments non sélectionnés
+          unselectedItemColor: Color(0x778BA8), // Couleur des éléments non sélectionnés
         ),
+
+        fontFamily: 'Nunito',
+        // Pour les titres, par exemple
       ),
       debugShowCheckedModeBanner: false,
       home: MyHomePage(),
@@ -42,27 +58,28 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Container(
-              padding: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0), // Ajoutez un padding autour
-              color: Color(0xFF15232E), // Assurez-vous que la couleur de fond correspond
-              height: 150.0, // Définissez une hauteur fixe pour le conteneur
-              width: double.infinity, // S'étend sur toute la largeur disponible
+              padding: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+              color: Color(0xFF15232E),
+              height: 150.0,
+              width: double.infinity,
               child: Stack(
+                clipBehavior: Clip.none,
                 children: [
                   Align(
-                    alignment: Alignment.centerLeft, // Aligner le texte à gauche
+                    alignment: Alignment.centerLeft,
                     child: Text(
                       'Bienvenue !',
                       style: TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
+
                         fontSize: 35.0,
                       ),
                     ),
                   ),
                   Positioned(
-                    right: 0,
-                    bottom: -65, // Décaler vers le bas dans le Stack
-                    child: SvgPicture.asset('assets/astronaut.svg', height: 170), // Image de l'astronaute
+                    right: 20,
+                    bottom: -65,
+                    child: SvgPicture.asset('res/svg/astronaut.svg', height: 200),
                   ),
                 ],
               ),
@@ -78,23 +95,23 @@ class MyHomePage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('res/svg/navbar_home.svg', width: 24, height: 24),
+            icon: SvgPicture.asset('res/svg/navbar_home.svg', width: 24, height: 24, color : Color(0xFF778BA8)),
             label: 'Accueil',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('res/svg/navbar_series.svg', width: 24, height: 24),
+            icon: SvgPicture.asset('res/svg/navbar_series.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
             label: 'Séries',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('res/svg/navbar_comics.svg', width: 24, height: 24),
+            icon: SvgPicture.asset('res/svg/navbar_comics.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
             label: 'Comics',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('res/svg/navbar_movies.svg', width: 24, height: 24),
+            icon: SvgPicture.asset('res/svg/navbar_movies.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
             label: 'Films',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('res/svg/navbar_search.svg', width: 24, height: 24),
+            icon: SvgPicture.asset('res/svg/navbar_search.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
             label: 'Recherche',
           ),
         ],
@@ -103,7 +120,7 @@ class MyHomePage extends StatelessWidget {
         unselectedItemColor: Color(0xFF778BA8),
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
-          // Navigation en fonction de l'index sélectionné
+
           switch (index) {
             case 0: // Accueil
               Navigator.push(
@@ -114,25 +131,25 @@ class MyHomePage extends StatelessWidget {
             case 1:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SeriesPage()), // Naviguer vers la page d'accueil
-              );
+                MaterialPageRoute(builder: (context) => SeriesPage()),
+              ); // Naviguer vers la page des séries
               break;
             case 2: // Comics
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ComicsPage()), // Naviguer vers la page des comics
+                MaterialPageRoute(builder: (context) => ComicsPage()),
               );
               break;
             case 3: // Films
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MoviesPage()), // Naviguer vers la page des comics
+                MaterialPageRoute(builder: (context) => MoviesPage()),
               );
               break;
             case 4: // Recherche
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SearchScreen()), // Naviguer vers la page des comics
+                MaterialPageRoute(builder: (context) => SearchScreen()),
               );
               break;
             default:
@@ -337,6 +354,7 @@ class FilmItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
         ),
         color: Color(0xFF284C6A),
+
         child: Column(
           mainAxisSize: MainAxisSize.min, // Pour que la colonne prenne la hauteur minimale de son contenu
           children: <Widget>[
