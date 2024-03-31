@@ -1,10 +1,26 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
+<<<<<<< HEAD
 project(application_comics LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "application_comics")
+=======
+<<<<<<< HEAD
+project(mobile LANGUAGES CXX)
+
+# The name of the executable created for the application. Change this to change
+# the on-disk name of your application.
+set(BINARY_NAME "mobile")
+=======
+project(comics LANGUAGES CXX)
+
+# The name of the executable created for the application. Change this to change
+# the on-disk name of your application.
+set(BINARY_NAME "comics")
+>>>>>>> 39ac53102bd11fe9ef78673b3d33659f6bff62cc
+>>>>>>> 16cc88141fd076c01921b224fc2540300dcfa1de
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

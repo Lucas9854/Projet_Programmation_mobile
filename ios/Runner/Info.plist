@@ -5,7 +5,15 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
+<<<<<<< HEAD
 	<string>Application Comics</string>
+=======
+<<<<<<< HEAD
+	<string>Mobile</string>
+=======
+	<string>Comics</string>
+>>>>>>> 39ac53102bd11fe9ef78673b3d33659f6bff62cc
+>>>>>>> 16cc88141fd076c01921b224fc2540300dcfa1de
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +21,15 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
+<<<<<<< HEAD
 	<string>application_comics</string>
+=======
+<<<<<<< HEAD
+	<string>mobile</string>
+=======
+	<string>comics</string>
+>>>>>>> 39ac53102bd11fe9ef78673b3d33659f6bff62cc
+>>>>>>> 16cc88141fd076c01921b224fc2540300dcfa1de
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

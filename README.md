@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 # application_comics
+=======
+<<<<<<< HEAD
+# mobile
+=======
+# comics
+>>>>>>> 39ac53102bd11fe9ef78673b3d33659f6bff62cc
+>>>>>>> 16cc88141fd076c01921b224fc2540300dcfa1de
 
 A new Flutter project.
 

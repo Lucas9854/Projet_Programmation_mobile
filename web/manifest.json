@@ -1,6 +1,16 @@
 {
+<<<<<<< HEAD
     "name": "application_comics",
     "short_name": "application_comics",
+=======
+<<<<<<< HEAD
+    "name": "mobile",
+    "short_name": "mobile",
+=======
+    "name": "comics",
+    "short_name": "comics",
+>>>>>>> 39ac53102bd11fe9ef78673b3d33659f6bff62cc
+>>>>>>> 16cc88141fd076c01921b224fc2540300dcfa1de
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
