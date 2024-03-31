@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:application_comics/comics_api.dart';
-import 'package:application_comics/modele_API.dart';
-import 'DetailSerie.dart';
+import 'package:application_comics/API/API_request.dart';
+import 'package:application_comics/API/API_model.dart';
+import '../pagesDetail/DetailSeriePage.dart';
 import 'Films.dart';
-import 'main.dart';
+import '../main.dart';
 import 'Comics.dart';
 import 'Recherche.dart';
 
@@ -24,7 +24,6 @@ class SeriesPage extends StatelessWidget {
   }
 }
 
-// Importez les packages nécessaires et les fichiers appropriés
 
 class SeriesInfo {
 
@@ -166,14 +165,14 @@ class HomePage extends StatelessWidget {
             case 0: // Accueil
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyApp()), // Naviguer vers la page d'accueil
+                MaterialPageRoute(builder: (context) => MyApp()),
               );
               break;
             case 1:
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => SeriesPage()),
-              ); // Naviguer vers la page des séries
+              );
               break;
             case 2: // Comics
               Navigator.push(
@@ -221,7 +220,6 @@ class HomePage extends StatelessWidget {
                     seriesInfo: seriesInfo,
 
                     onTap: () {
-                      // Do nothing on tap of the button inside SeriesInfoWidget
                     },
                   ),
                 );

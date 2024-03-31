@@ -101,7 +101,7 @@ class DetailInfoRow extends StatelessWidget {
 
 void main() {
   runApp(MaterialApp(
-    home: DetailPerso(name: 'Nom Personnage', image: 'chemin_vers_image'), // Ajustez avec les données réelles
+    home: DetailPerso(name: 'Nom Personnage', image: 'chemin_vers_image'),
     debugShowCheckedModeBanner: false,
   ));
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:application_comics/comics_api.dart';
-import 'package:application_comics/modele_API.dart';
+import 'package:application_comics/API/API_request.dart';
+import 'package:application_comics/API/API_model.dart';
 import 'package:rxdart/subjects.dart'; // Importez les sujets de rxdart
 
 class CharactersBloc {
@@ -16,14 +16,14 @@ class CharactersBloc {
   void loadCharacters() async {
     try {
       print('Chargement des comics en cours...');
-      // Chargez les comics depuis l'API ou une autre source de données
+      // Chargement des comics depuis l'API
       final List<CharactersResponse> charactersListResponse = await ComicsRequest().loadCharactersList('characters');
       if (charactersListResponse.isNotEmpty) {
         final List<CharactersInfo> charactersInfoList = charactersListResponse.asMap().map((index, character) {
           final charactersInfo = CharactersInfo(
             name: character.name ?? '',
             realName: character.realName?? '',
-            alias: character.alias?? '',
+            alias: character.aliases?? '',
             description : character.deck ?? '',
             gender : character.gender ?? 2,
             birth : character.birth ?? '',

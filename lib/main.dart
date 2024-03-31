@@ -1,14 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:application_comics/comics_api.dart';
-import 'package:application_comics/modele_API.dart';
-import 'Series.dart';
-import 'Comics.dart';
-import 'Films.dart';
-import 'Recherche.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:dio/dio.dart';
+import 'pagesPrincipales/Series.dart';
+import 'pagesPrincipales/Comics.dart';
+import 'pagesPrincipales/Films.dart';
+import 'pagesPrincipales/Recherche.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
@@ -32,7 +27,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Nunito',
       ),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(), // Appel de la méthode MyHomePage ici
+      home: MyHomePage(),
     );
   }
 }
@@ -43,8 +38,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late SeriesBloc _seriesBloc;
-  late MoviesBloc _moviesBloc; // Ajout de MoviesBloc
-  late ComicsBloc _comicsBloc; // Ajout de ComicsBloc
+  late MoviesBloc _moviesBloc;
+  late ComicsBloc _comicsBloc;
 
   @override
   void initState() {
@@ -52,18 +47,18 @@ class _MyHomePageState extends State<MyHomePage> {
     _seriesBloc = SeriesBloc();
     _seriesBloc.loadFirstFiveSeries();
 
-    _moviesBloc = MoviesBloc(); // Initialisation de MoviesBloc
-    _moviesBloc.loadFirstFiveMovies(); // Chargement des premiers cinq films
+    _moviesBloc = MoviesBloc();
+    _moviesBloc.loadFirstFiveMovies();
 
-    _comicsBloc = ComicsBloc(); // Initialisation de ComicsBloc
-    _comicsBloc.loadFirstFiveComics(); // Chargement des premiers cinq comics
+    _comicsBloc = ComicsBloc();
+    _comicsBloc.loadFirstFiveComics();
   }
 
   @override
   void dispose() {
     _seriesBloc.dispose();
-    _moviesBloc.dispose(); // Dispose de MoviesBloc
-    _comicsBloc.dispose(); // Dispose de ComicsBloc
+    _moviesBloc.dispose();
+    _comicsBloc.dispose();
     super.dispose();
   }
 
@@ -112,21 +107,21 @@ class _MyHomePageState extends State<MyHomePage> {
               'Films populaires',
               MoviesList(_moviesBloc.moviesStream),
                   () {
-                // Naviguez vers la page des films lorsque l'utilisateur appuie sur "Voir plus"
+
                 Navigator.push(context, MaterialPageRoute(builder: (context) => MoviesPage()));
               },
             ),
-            // Section des comics
+
             _buildSection(
               context,
               'Comics populaires',
-              ComicsList(_comicsBloc.comicsStream), // Utilisation de ComicsList avec le flux de comics
+              ComicsList(_comicsBloc.comicsStream),
                   () {
-                // Naviguez vers la page des comics lorsque l'utilisateur appuie sur "Voir plus"
+
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ComicsPage()));
               },
             ),
-            // Autres sections
+
             SizedBox(height: 20),
           ],
         ),
@@ -165,14 +160,14 @@ class _MyHomePageState extends State<MyHomePage> {
             case 0: // Accueil
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyApp()), // Naviguer vers la page d'accueil
+                MaterialPageRoute(builder: (context) => MyApp()),
               );
               break;
             case 1:
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => SeriesPage()),
-              ); // Naviguer vers la page des séries
+              );
               break;
             case 2: // Comics
               Navigator.push(
@@ -199,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Méthode pour construire une section avec un titre, du contenu et un bouton "Voir plus"
+
   Widget _buildSection(BuildContext context, String title, Widget content, VoidCallback onPressed) {
     return Container(
       color: Color(0xFF1E3243),
@@ -221,14 +216,14 @@ class SeriesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<SeriesInfo>>(
-      stream: seriesStream, // Utilisez le flux de données seriesStream
+      stream: seriesStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Affichez un indicateur de chargement en attendant les données
+          return CircularProgressIndicator();
         } else if (snapshot.hasError) {
-          return Text('Erreur: ${snapshot.error}'); // Affichez un message d'erreur s'il y a une erreur
+          return Text('Erreur: ${snapshot.error}');
         } else if (snapshot.hasData) {
-          final seriesList = snapshot.data!; // Récupérez les données
+          final seriesList = snapshot.data!;
           return Container(
             height: 150.0,
             child: ListView.builder(
@@ -280,7 +275,7 @@ class SectionHeader extends StatelessWidget {
             child: Text('Voir plus'),
             onPressed: onPressed,
             style: TextButton.styleFrom(
-              foregroundColor: Colors.white, // Use foregroundColor instead of primary for text color
+              foregroundColor: Colors.white,
               backgroundColor: Color(0xFF0F1921),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -369,20 +364,20 @@ class SeriesItem extends StatelessWidget {
   SeriesItem({required this.name, required this.imageUrl});
   @override
   Widget build(BuildContext context) {
-    // Utiliser un Container pour définir des dimensions fixes
+
     return Container(
-      width: 160.0, // Largeur fixe pour chaque élément
+      width: 160.0,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
         color: Color(0xFF284C6A),
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Cela garantit que la colonne prend la hauteur minimale de son contenu
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-              child: Image.network(imageUrl, height: 100), // Utilisez Image.network pour charger l'image à partir de l'URL
+              child: Image.network(imageUrl, height: 100),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
@@ -406,27 +401,27 @@ class ComicsItem extends StatelessWidget {
   ComicsItem({required this.volume, required this.number, required this.name, required this.imageUrl});
   @override
   Widget build(BuildContext context) {
-    // Utiliser un Container pour définir des dimensions fixes
+
     return Container(
-      width: 160.0, // Largeur fixe pour chaque élément
+      width: 160.0,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
         color: Color(0xFF284C6A),
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Pour que la colonne prenne la hauteur minimale de son contenu
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-              child: Image.network(imageUrl, height: 100), // Hauteur fixe pour l'image
+              child: Image.network(imageUrl, height: 100),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
                 '${volume} #${number} - ${name}',
                 style: TextStyle(color: Colors.white),
-                textAlign: TextAlign.center, // Centrer le titre
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -441,9 +436,9 @@ class FilmItem extends StatelessWidget {
   FilmItem({required this.name, required this.imageUrl});
   @override
   Widget build(BuildContext context) {
-    // Utiliser un Container pour définir des dimensions fixes
+
     return Container(
-      width: 160.0, // Largeur fixe pour chaque élément
+      width: 160.0,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -451,18 +446,18 @@ class FilmItem extends StatelessWidget {
         color: Color(0xFF284C6A),
 
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Pour que la colonne prenne la hauteur minimale de son contenu
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-              child: Image.network(imageUrl, height: 100), // Hauteur fixe pour l'image
+              child: Image.network(imageUrl, height: 100),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
                 name,
                 style: TextStyle(color: Colors.white),
-                textAlign: TextAlign.center, // Centrer le titre
+                textAlign: TextAlign.center,
               ),
             ),
           ],

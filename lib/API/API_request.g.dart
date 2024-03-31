@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'comics_api.dart';
+part of 'API_request.dart';
 
 // **************************************************************************
 // RetrofitGenerator

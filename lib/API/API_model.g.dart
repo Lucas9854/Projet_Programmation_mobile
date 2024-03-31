@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'modele_API.dart';
+part of 'API_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -44,9 +44,9 @@ MoviesResponse _$MoviesResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$MoviesResponseToJson(MoviesResponse instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'release_date': instance.releaseDate,
-      'runtime': instance.runtime,
       'description': instance.description,
+      'runtime': instance.runtime,
+      'release_date': instance.releaseDate,
       'image': instance.image,
     };
 
@@ -67,10 +67,10 @@ ComicsResponse _$ComicsResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ComicsResponseToJson(ComicsResponse instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'issue_number': instance.issuesNumber,
       'volume': instance.volume,
-      'cover_date': instance.coverDate,
       'description': instance.description,
+      'issue_number': instance.issuesNumber,
+      'cover_date': instance.coverDate,
       'image': instance.image,
     };
 
@@ -91,10 +91,10 @@ Map<String, dynamic> _$CharactersResponseToJson(CharactersResponse instance) =>
     <String, dynamic>{
       'name': instance.name,
       'real_name': instance.realName,
-      'aliases': instance.alias,
+      'aliases': instance.aliases,
       'deck': instance.deck,
-      'gender': instance.gender,
       'birth': instance.birth,
+      'gender': instance.gender,
       'image': instance.image,
     };
 

@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:rxdart/subjects.dart'; // Importez les sujets de rxdart
-import 'package:application_comics/comics_api.dart';
-import 'package:application_comics/modele_API.dart';
+import 'package:rxdart/subjects.dart';
+import 'package:application_comics/API/API_request.dart';
+import 'package:application_comics/API/API_model.dart';
 
 class EpisodesBloc {
   final BehaviorSubject<List<EpisodesInfo>> _episodesController =
-  BehaviorSubject<List<EpisodesInfo>>.seeded([]); // Initialisez avec une valeur initiale vide
+  BehaviorSubject<List<EpisodesInfo>>.seeded([]);
   Stream<List<EpisodesInfo>> get episodestream => _episodesController.stream;
 
   EpisodesBloc() {
@@ -16,7 +15,6 @@ class EpisodesBloc {
   void loadEpisodes() async {
     try {
       print('Chargement des comics en cours...');
-      // Chargez les comics depuis l'API ou une autre source de données
       final List<EpisodesResponse> episodesListResponse = await ComicsRequest().loadEpisodesList('episodes');
       if (episodesListResponse.isNotEmpty) {
         final List<EpisodesInfo> episodesInfoList = episodesListResponse.asMap().map((index, episode) {

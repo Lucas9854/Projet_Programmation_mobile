@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'DetailPerso.dart';
-import 'Films.dart';
+import 'DetailCharacterPage.dart';
+import '../pagesPrincipales/Series.dart';
 import 'Characters.dart';
 import 'Episodes.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 
-class DetailFilm extends StatefulWidget {
-  final MovieInfo moviesInfo;
+class DetailSerie extends StatefulWidget {
+  final SeriesInfo seriesInfo;
 
-  DetailFilm({required this.moviesInfo});
+  DetailSerie({required this.seriesInfo});
 
   @override
-  _DetailFilmState createState() => _DetailFilmState();
+  _DetailSerieState createState() => _DetailSerieState();
 }
 
-class _DetailFilmState extends State<DetailFilm> {
+class _DetailSerieState extends State<DetailSerie> {
   int _selectedIndex = 0;
   late CharactersBloc _charactersBloc;
-  late EpisodesBloc _episodesBloc; // Déclarez une variable pour le EpisodesBloc
+  late EpisodesBloc _episodesBloc;
 
   @override
   void initState() {
     super.initState();
     _charactersBloc = CharactersBloc();
-    _episodesBloc = EpisodesBloc(); // Initialisez le EpisodesBloc
+    _episodesBloc = EpisodesBloc();
   }
 
   @override
   void dispose() {
     _charactersBloc.dispose();
-    _episodesBloc.dispose();
+    _episodesBloc
+        .dispose();
     super.dispose();
   }
 
@@ -46,9 +46,7 @@ class _DetailFilmState extends State<DetailFilm> {
           },
         ),
         title: Text(
-          widget.moviesInfo.name,
-          style: TextStyle(color: Colors.white),
-        ),
+            widget.seriesInfo.name, style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xFF15232E),
       ),
       body: SingleChildScrollView(
@@ -62,7 +60,7 @@ class _DetailFilmState extends State<DetailFilm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.network(
-                    widget.moviesInfo.imageUrl,
+                    widget.seriesInfo.imageUrl,
                     width: 100,
                     height: 150,
                     fit: BoxFit.cover,
@@ -80,7 +78,7 @@ class _DetailFilmState extends State<DetailFilm> {
               ),
             ),
             _selectedIndex == 0
-                ? _buildHtmlSection(widget.moviesInfo.description)
+                ? _buildHtmlSection(widget.seriesInfo.description)
                 : _selectedIndex == 1
                 ? _buildCharactersSection()
                 : _buildEpisodesSection(),
@@ -194,6 +192,8 @@ class _DetailFilmState extends State<DetailFilm> {
       },
     );
   }
+
+
 
   Widget _buildEpisodesSection() {
     return StreamBuilder<List<EpisodesInfo>>(

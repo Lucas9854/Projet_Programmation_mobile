@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'modele_API.g.dart';
+part 'API_model.g.dart';
 
 @JsonSerializable()
 class SeriesResponse {
@@ -52,14 +52,14 @@ class MoviesResponse {
   @JsonKey(name: 'name')
   final String? name;
 
-  @JsonKey(name: 'release_date')
-  final String? releaseDate;
+  @JsonKey(name: 'description')
+  final String? description;
 
   @JsonKey(name: 'runtime')
   final String? runtime;
 
-  @JsonKey(name: 'description')
-  final String? description;
+  @JsonKey(name: 'release_date')
+  final String? releaseDate;
 
   @JsonKey(name: 'image')
   final ImageApi? image;
@@ -92,17 +92,17 @@ class ComicsResponse {
   @JsonKey(name: 'name')
   final String? name;
 
-  @JsonKey(name: 'issue_number')
-  final String? issuesNumber;
-
   @JsonKey(name: 'volume')
   final Volume? volume;
 
-  @JsonKey(name: 'cover_date')
-  final String? coverDate;
-
   @JsonKey(name: 'description')
   final String? description;
+
+  @JsonKey(name: 'issue_number')
+  final String? issuesNumber;
+
+  @JsonKey(name: 'cover_date')
+  final String? coverDate;
 
   @JsonKey(name: 'image')
   final ImageApi? image;
@@ -139,21 +139,21 @@ class CharactersResponse {
   final String? realName;
 
   @JsonKey(name: 'aliases')
-  final String? alias;
+  final String? aliases;
 
   @JsonKey(name: 'deck')
   final String? deck;
 
-  @JsonKey(name: 'gender')
-  final int? gender;
-
   @JsonKey(name: 'birth')
   final String? birth;
+
+  @JsonKey(name: 'gender')
+  final int? gender;
 
   @JsonKey(name: 'image')
   final ImageApi? image;
 
-  CharactersResponse(this.name, this.realName , this.alias, this.deck, this.gender, this.birth ,  this.image);
+  CharactersResponse(this.name, this.realName , this.aliases, this.deck, this.gender, this.birth ,  this.image);
 
   factory CharactersResponse.fromJson(Map<String, dynamic> json) {
     final imageJson = json['image'];

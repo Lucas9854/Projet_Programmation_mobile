@@ -1,10 +1,8 @@
-// comics_api.dart
-
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:application_comics/modele_API.dart';
+import 'package:application_comics/API/API_model.dart';
 
-part 'comics_api.g.dart';
+part 'API_request.g.dart';
 
 @RestApi(baseUrl: 'https://api.formation-android.fr/comicvine')
 abstract class ComicsAPI {
@@ -85,7 +83,7 @@ class ComicsRequest {
   }
 
   Future<List<SeriesResponse>> loadSeriesList(String endpoint) async {
-    // Implémentez de manière similaire pour charger la liste des séries
+
     try {
       final String apiKey = '07165e05c9d2ef5705474d1061cfd1df53b2719e';
       final String apiUrl = 'https://api.formation-android.fr/comicvine';
@@ -170,7 +168,7 @@ class ComicsRequest {
   Future<List<EpisodesResponse>> loadEpisodesList(String endpoint) async {
     // Implémentez de manière similaire pour charger la liste des personnages
     try {
-      final String apiKey = '07165e05c9d2ef5705474d1061cfd1df53b2719e';
+      final String apiKey = 'ba548f364208f2d366a66d33b42b413d9e543432';
       final String apiUrl = 'https://api.formation-android.fr/comicvine';
 
       final response = await _dio.get(
@@ -185,13 +183,13 @@ class ComicsRequest {
               .map((json) => EpisodesResponse.fromJson(json))
               .toList();
         } else {
-          throw Exception('Expected a list of episodes from API');
+          throw Exception('Une liste d episodes de lAPI est attendue');
         }
       } else {
-        throw Exception('Failed to load episodes list');
+        throw Exception('Echec du chargement de la liste');
       }
     } catch (e) {
-      throw Exception('Failed to load episodes list: $e');
+      throw Exception('Echec du chargement de la liste avec lerreur suivante: $e');
     }
   }
 

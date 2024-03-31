@@ -2,35 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
 import 'dart:math';
-import 'DetailComic.dart';
-import 'package:application_comics/comics_api.dart';
-import 'package:application_comics/modele_API.dart';
+import '../pagesDetail/DetailMoviePage.dart';
+import 'package:application_comics/API/API_request.dart';
+import 'package:application_comics/API/API_model.dart';
 import 'Series.dart';
-import 'main.dart';
-import 'Films.dart';
+import '../main.dart';
+import 'Comics.dart';
 import 'Recherche.dart';
 
-class ComicsPage extends StatelessWidget {
+class MoviesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Comics',
+      title: 'Films',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFF15232E),
       ),
-      home: ComicsListPage(),
+      home: MoviesListPage(),
     );
   }
 }
 
-class ComicsListPage extends StatelessWidget {
+class MoviesListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Comics les plus populaires',
+          'Films les plus populaires',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Color(0xFF15232E),
@@ -100,30 +100,31 @@ class ComicsListPage extends StatelessWidget {
           }
         },
       ),
-      body: ComicsListWidget(),
+      body: MoviesListWidget(),
       // BottomNavigationBar reste inchangé
     );
   }
 }
 
-class ComicsListWidget extends StatelessWidget {
+class MoviesListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<ComicInfo>>(
-      stream: ComicsBloc().comicsStream,
+    return StreamBuilder<List<MovieInfo>>(
+      stream: MoviesBloc().moviesStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Erreur: ${snapshot.error}'));
         } else if (snapshot.hasData) {
-          final List<ComicInfo> comicInfoList = snapshot.data!;
+          final List<MovieInfo> movieInfoList = snapshot.data!;
           return ListView.builder(
-            itemCount: comicInfoList.length,
+            itemCount: movieInfoList.length,
             itemBuilder: (context, index) {
-              final ComicInfo comicInfo = comicInfoList[index];
-              return ComicWidget(
-                comicInfo: comicInfo,
+              final MovieInfo movieInfo = movieInfoList[index];
+              return MovieWidget(
+
+                movieInfo: movieInfo,
               );
             },
           );
@@ -135,21 +136,25 @@ class ComicsListWidget extends StatelessWidget {
   }
 }
 
-class ComicWidget extends StatelessWidget {
-  final ComicInfo comicInfo;
+class MovieWidget extends StatelessWidget {
+  final MovieInfo movieInfo;
 
-  ComicWidget({
-    required this.comicInfo,
+  MovieWidget({
+    required this.movieInfo,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigation vers la page de détails du comic
+
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailComic(comicInfo: comicInfo)),
+          MaterialPageRoute(
+            builder: (context) => DetailFilm(
+              moviesInfo: movieInfo,
+            ),
+          ),
         );
       },
       child: Card(
@@ -165,7 +170,7 @@ class ComicWidget extends StatelessWidget {
                     bottomLeft: Radius.circular(15),
                   ),
                   child: Image.network(
-                    comicInfo.imageUrl,
+                    movieInfo.imageUrl,
                     fit: BoxFit.cover,
                     width: 150,
                     height: 200,
@@ -177,18 +182,10 @@ class ComicWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        comicInfo.name,
+                        movieInfo.name,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        comicInfo.volumeName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontStyle: FontStyle.italic, // Ajout de l'italique
                           color: Colors.white,
                         ),
                       ),
@@ -196,16 +193,16 @@ class ComicWidget extends StatelessWidget {
                       Row(
                         children: [
                           SvgPicture.asset(
-                            'res/svg/ic_publisher_bicolor.svg',
+                            'res/svg/ic_movie_bicolor.svg',
                             width: 14,
                             height: 14,
                             color: Colors.white,
                           ),
                           SizedBox(width: 4),
                           Text(
-                            'N°${comicInfo.number}',
+                            '${movieInfo.duree ?? ''} minutes',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 14,
                               color: Colors.white,
                             ),
                           ),
@@ -221,7 +218,10 @@ class ComicWidget extends StatelessWidget {
                           ),
                           SizedBox(width: 4),
                           Text(
-                            comicInfo.coverDate.isNotEmpty ? comicInfo.coverDate.substring(0, min(4, comicInfo.coverDate.length)) : 'Date indisponible', // Affiche les 4 premiers caractères de la date de publication
+                            movieInfo.releaseDate.isNotEmpty
+                                ? movieInfo.releaseDate
+                                .substring(0, min(4, movieInfo.releaseDate.length))
+                                : '',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.white,
@@ -239,13 +239,7 @@ class ComicWidget extends StatelessWidget {
               top: 0,
               left: 0,
               child: ElevatedButton(
-                onPressed: () {
-                  // Navigation vers la page de détails du comic
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DetailComic(comicInfo: comicInfo)),
-                  );
-                },
+                onPressed: null,
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFFF8100)),
                   padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.symmetric(horizontal: 8, vertical: 8)),
@@ -253,7 +247,7 @@ class ComicWidget extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
-                    '#${comicInfo.rank}',
+                    '#${movieInfo.rank}',
                     style: TextStyle(
                       color: Colors.white,
                     ),
@@ -270,95 +264,92 @@ class ComicWidget extends StatelessWidget {
 
 
 
+class MoviesBloc {
+  final _moviesController = StreamController<List<MovieInfo>>();
+  Stream<List<MovieInfo>> get moviesStream => _moviesController.stream;
 
-class ComicsBloc {
-  final _comicsController = StreamController<List<ComicInfo>>();
-  Stream<List<ComicInfo>> get comicsStream => _comicsController.stream;
-
-  ComicsBloc() {
-    loadComics();
+  MoviesBloc() {
+    loadMovies();
   }
 
-  void loadComics() async {
+  void loadMovies() async {
     try {
-      print('Chargement des comics en cours...');
-      // Chargez les comics depuis l'API ou une autre source de données
-      final List<ComicsResponse> comicsListResponse = await ComicsRequest().loadComicsList('issues');
-      if (comicsListResponse.isNotEmpty) {
-        final List<ComicInfo> comicInfoList = comicsListResponse.asMap().map((index, comic) {
-          final comicInfo = ComicInfo(
-            name: comic.name ?? '',
-            number: comic.issuesNumber?? '',
-            volumeName: comic.volume?.name ?? '',
-            coverDate : comic.coverDate ?? '',
-            description: comic.description ?? '',
-            imageUrl: comic.image?.screenUrl ?? '',
+      print('Chargement des films en cours...');
+      // Chargez les films depuis l'API ou une autre source de données
+      final List<MoviesResponse> moviesListResponse = await ComicsRequest().loadMoviesList('movies');
+      if (moviesListResponse.isNotEmpty) {
+        final List<MovieInfo> movieInfoList = moviesListResponse.asMap().map((index, movie) {
+          final movieInfo = MovieInfo(
+            name: movie.name ?? '',
+            releaseDate: movie.releaseDate ?? '',
+            duree: movie.runtime ?? '',
+            description: movie.description ?? '',
+            imageUrl: movie.image?.screenUrl ?? '',
             rank: index + 1,
           );
-          return MapEntry(index, comicInfo);
+          return MapEntry(index, movieInfo);
         }).values.toList();
 
-        _comicsController.add(comicInfoList.take(50).toList());
+        _moviesController.add(movieInfoList.take(50).toList());
       }
       else {
         print('La réponse de l\'API est vide.');
       }
     } catch (e) {
-      print('Erreur lors du chargement des comics : $e');
-      _comicsController.addError('Erreur lors du chargement des comics');
+      print('Erreur lors du chargement des films : $e');
+      _moviesController.addError('Erreur lors du chargement des films');
     }
   }
-  void loadFirstFiveComics() async {
+  void loadFirstFiveMovies() async {
     try {
-      print('Chargement des comics en cours...');
-      // Chargez les comics depuis l'API ou une autre source de données
-      final List<ComicsResponse> comicsListResponse = await ComicsRequest().loadComicsList('issues');
-      if (comicsListResponse.isNotEmpty) {
-        final List<ComicInfo> comicInfoList = comicsListResponse.asMap().map((index, comic) {
-          final comicInfo = ComicInfo(
-            name: comic.name ?? '',
-            number: comic.issuesNumber?? '',
-            volumeName: comic.volume?.name ?? '',
-            coverDate : comic.coverDate ?? '',
-            description: comic.description ?? '',
-            imageUrl: comic.image?.screenUrl ?? '',
+      print('Chargement des films en cours...');
+      // Chargez les films depuis l'API ou une autre source de données
+      final List<MoviesResponse> moviesListResponse = await ComicsRequest().loadMoviesList('movies');
+      if (moviesListResponse.isNotEmpty) {
+        final List<MovieInfo> movieInfoList = moviesListResponse.asMap().map((index, movie) {
+          final movieInfo = MovieInfo(
+            name: movie.name ?? '',
+            releaseDate: movie.releaseDate ?? '',
+            duree: movie.runtime ?? '',
+            description: movie.description ?? '',
+            imageUrl: movie.image?.screenUrl ?? '',
             rank: index + 1,
           );
-          return MapEntry(index, comicInfo);
+          return MapEntry(index, movieInfo);
         }).values.toList();
 
-        _comicsController.add(comicInfoList.take(5).toList());
+        _moviesController.add(movieInfoList.take(5).toList());
       }
       else {
         print('La réponse de l\'API est vide.');
       }
     } catch (e) {
-      print('Erreur lors du chargement des comics : $e');
-      _comicsController.addError('Erreur lors du chargement des comics');
+      print('Erreur lors du chargement des films : $e');
+      _moviesController.addError('Erreur lors du chargement des films');
     }
   }
 
   void dispose() {
-    _comicsController.close();
+    _moviesController.close();
   }
 }
 
-class ComicInfo {
+class MovieInfo {
   final String name;
-  final String number;
-  final String volumeName;
-  final String coverDate;
+  final String releaseDate;
+  final String? duree;
   final String description;
   final String imageUrl;
   final int rank;
 
-  ComicInfo({
+  MovieInfo({
     required this.name,
-    required this.number,
-    required this.volumeName,
-    required this.coverDate,
+    required this.releaseDate,
+    required this.duree,
     required this.description,
     required this.imageUrl,
     required this.rank,
   });
 }
+
+

@@ -1,40 +1,37 @@
 import 'package:flutter/material.dart';
-import 'DetailPerso.dart';
-import 'Series.dart';
+import 'package:flutter_svg/svg.dart';
+import 'DetailCharacterPage.dart';
+import '../pagesPrincipales/Films.dart';
 import 'Characters.dart';
 import 'Episodes.dart';
-import 'DetailSerie.dart';
-import 'DetailComic.dart';
-import 'DetailFilm.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 
-class DetailSerie extends StatefulWidget {
-  final SeriesInfo seriesInfo;
+class DetailFilm extends StatefulWidget {
+  final MovieInfo moviesInfo;
 
-  DetailSerie({required this.seriesInfo});
+  DetailFilm({required this.moviesInfo});
 
   @override
-  _DetailSerieState createState() => _DetailSerieState();
+  _DetailFilmState createState() => _DetailFilmState();
 }
 
-class _DetailSerieState extends State<DetailSerie> {
+class _DetailFilmState extends State<DetailFilm> {
   int _selectedIndex = 0;
   late CharactersBloc _charactersBloc;
-  late EpisodesBloc _episodesBloc; // Déclarez une variable pour le EpisodesBloc
+  late EpisodesBloc _episodesBloc;
 
   @override
-  void initState() {
+  void initState() {  //initialisation
     super.initState();
     _charactersBloc = CharactersBloc();
-    _episodesBloc = EpisodesBloc(); // Initialisez le EpisodesBloc
+    _episodesBloc = EpisodesBloc();
   }
 
   @override
   void dispose() {
     _charactersBloc.dispose();
-    _episodesBloc
-        .dispose(); // Disposez du EpisodesBloc lorsqu'il n'est plus nécessaire
+    _episodesBloc.dispose();
     super.dispose();
   }
 
@@ -49,7 +46,9 @@ class _DetailSerieState extends State<DetailSerie> {
           },
         ),
         title: Text(
-            widget.seriesInfo.name, style: TextStyle(color: Colors.white)),
+          widget.moviesInfo.name,
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Color(0xFF15232E),
       ),
       body: SingleChildScrollView(
@@ -63,7 +62,7 @@ class _DetailSerieState extends State<DetailSerie> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.network(
-                    widget.seriesInfo.imageUrl,
+                    widget.moviesInfo.imageUrl,
                     width: 100,
                     height: 150,
                     fit: BoxFit.cover,
@@ -81,7 +80,7 @@ class _DetailSerieState extends State<DetailSerie> {
               ),
             ),
             _selectedIndex == 0
-                ? _buildHtmlSection(widget.seriesInfo.description)
+                ? _buildHtmlSection(widget.moviesInfo.description)
                 : _selectedIndex == 1
                 ? _buildCharactersSection()
                 : _buildEpisodesSection(),
@@ -195,8 +194,6 @@ class _DetailSerieState extends State<DetailSerie> {
       },
     );
   }
-
-
 
   Widget _buildEpisodesSection() {
     return StreamBuilder<List<EpisodesInfo>>(

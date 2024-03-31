@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'DetailPerso.dart';
-import 'Comics.dart';
+import 'DetailCharacterPage.dart';
+import '../pagesPrincipales/Comics.dart';
 import 'Characters.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
