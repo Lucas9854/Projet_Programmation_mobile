@@ -5,8 +5,10 @@ import 'dart:math';
 import 'DetailFilm.dart';
 import 'package:application_comics/comics_api.dart';
 import 'package:application_comics/modele_API.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'Series.dart';
+import 'main.dart';
+import 'Comics.dart';
+import 'Recherche.dart';
 
 class MoviesPage extends StatelessWidget {
   @override
@@ -33,6 +35,71 @@ class MoviesListPage extends StatelessWidget {
         ),
         backgroundColor: Color(0xFF15232E),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_home.svg', width: 24, height: 24, color : Color(0xFF778BA8)),
+            label: 'Accueil',
+
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_series.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
+            label: 'Séries',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_comics.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
+            label: 'Comics',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_movies.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
+            label: 'Films',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_search.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
+            label: 'Recherche',
+          ),
+        ],
+        backgroundColor: Color(0xFF0F1E2B),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        onTap: (int index) {
+
+          switch (index) {
+            case 0: // Accueil
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyApp()), // Naviguer vers la page d'accueil
+              );
+              break;
+            case 1:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SeriesPage()),
+              ); // Naviguer vers la page des séries
+              break;
+            case 2: // Comics
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ComicsPage()),
+              );
+              break;
+            case 3: // Films
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MoviesPage()),
+              );
+              break;
+            case 4: // Recherche
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchScreen()),
+              );
+              break;
+            default:
+          }
+        },
+      ),
       body: MoviesListWidget(),
       // BottomNavigationBar reste inchangé
     );
@@ -56,6 +123,7 @@ class MoviesListWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final MovieInfo movieInfo = movieInfoList[index];
               return MovieWidget(
+
                 movieInfo: movieInfo,
               );
             },
@@ -223,6 +291,34 @@ class MoviesBloc {
         }).values.toList();
 
         _moviesController.add(movieInfoList.take(50).toList());
+      }
+      else {
+        print('La réponse de l\'API est vide.');
+      }
+    } catch (e) {
+      print('Erreur lors du chargement des films : $e');
+      _moviesController.addError('Erreur lors du chargement des films');
+    }
+  }
+  void loadFirstFiveMovies() async {
+    try {
+      print('Chargement des films en cours...');
+      // Chargez les films depuis l'API ou une autre source de données
+      final List<MoviesResponse> moviesListResponse = await ComicsRequest().loadMoviesList('movies');
+      if (moviesListResponse.isNotEmpty) {
+        final List<MovieInfo> movieInfoList = moviesListResponse.asMap().map((index, movie) {
+          final movieInfo = MovieInfo(
+            name: movie.name ?? '',
+            releaseDate: movie.releaseDate ?? '',
+            duree: movie.runtime ?? '',
+            description: movie.description ?? '',
+            imageUrl: movie.image?.screenUrl ?? '',
+            rank: index + 1,
+          );
+          return MapEntry(index, movieInfo);
+        }).values.toList();
+
+        _moviesController.add(movieInfoList.take(5).toList());
       }
       else {
         print('La réponse de l\'API est vide.');

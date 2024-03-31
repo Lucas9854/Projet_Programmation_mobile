@@ -15,17 +15,6 @@ void main() {
   runApp(MyApp());
 }
 
-class AstronautLogo extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      'res/svg/astronaut.svg',
-      semanticsLabel: 'Logo ',
-      height: 170, // La hauteur que vous souhaitez pour votre logo
-    );
-  }
-}
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -34,23 +23,50 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        scaffoldBackgroundColor: Color(0xFF15232E), //Couleur arriere plan
-
+        scaffoldBackgroundColor: Color(0xFF15232E),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFF15232E), // Couleur NavBar
-          selectedItemColor: Colors.white, // Couleur des éléments sélectionnés
-          unselectedItemColor: Color(0x778BA8), // Couleur des éléments non sélectionnés
+          backgroundColor: Color(0xFF15232E),
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Color(0x778BA8),
         ),
-
         fontFamily: 'Nunito',
-        // Pour les titres, par exemple
       ),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: MyHomePage(), // Appel de la méthode MyHomePage ici
     );
   }
 }
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late SeriesBloc _seriesBloc;
+  late MoviesBloc _moviesBloc; // Ajout de MoviesBloc
+  late ComicsBloc _comicsBloc; // Ajout de ComicsBloc
+
+  @override
+  void initState() {
+    super.initState();
+    _seriesBloc = SeriesBloc();
+    _seriesBloc.loadFirstFiveSeries();
+
+    _moviesBloc = MoviesBloc(); // Initialisation de MoviesBloc
+    _moviesBloc.loadFirstFiveMovies(); // Chargement des premiers cinq films
+
+    _comicsBloc = ComicsBloc(); // Initialisation de ComicsBloc
+    _comicsBloc.loadFirstFiveComics(); // Chargement des premiers cinq comics
+  }
+
+  @override
+  void dispose() {
+    _seriesBloc.dispose();
+    _moviesBloc.dispose(); // Dispose de MoviesBloc
+    _comicsBloc.dispose(); // Dispose de ComicsBloc
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,9 +87,6 @@ class MyHomePage extends StatelessWidget {
                       'Bienvenue !',
                       style: TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-
-
                         fontSize: 35.0,
                       ),
                     ),
@@ -87,9 +100,33 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            _buildSection(context, 'Séries populaires', SeriesList(), () => Navigator.push(context, MaterialPageRoute(builder: (context) => SeriesPage()))),
-            _buildSection(context, 'Comics populaires', ComicsList(), () => Navigator.push(context, MaterialPageRoute(builder: (context) => ComicsPage()))),
-            _buildSection(context, 'Films populaires', FilmList(), () => Navigator.push(context, MaterialPageRoute(builder: (context) => MoviesPage()))),
+            _buildSection(
+              context,
+              'Séries populaires',
+              SeriesList(_seriesBloc.seriesStream),
+                  () => Navigator.push(context, MaterialPageRoute(builder: (context) => SeriesPage())),
+            ),
+            // Section des films
+            _buildSection(
+              context,
+              'Films populaires',
+              MoviesList(_moviesBloc.moviesStream),
+                  () {
+                // Naviguez vers la page des films lorsque l'utilisateur appuie sur "Voir plus"
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MoviesPage()));
+              },
+            ),
+            // Section des comics
+            _buildSection(
+              context,
+              'Comics populaires',
+              ComicsList(_comicsBloc.comicsStream), // Utilisation de ComicsList avec le flux de comics
+                  () {
+                // Naviguez vers la page des comics lorsque l'utilisateur appuie sur "Voir plus"
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ComicsPage()));
+              },
+            ),
+            // Autres sections
             SizedBox(height: 20),
           ],
         ),
@@ -99,6 +136,7 @@ class MyHomePage extends StatelessWidget {
           BottomNavigationBarItem(
             icon: SvgPicture.asset('res/svg/navbar_home.svg', width: 24, height: 24, color : Color(0xFF778BA8)),
             label: 'Accueil',
+
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset('res/svg/navbar_series.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
@@ -118,8 +156,8 @@ class MyHomePage extends StatelessWidget {
           ),
         ],
         backgroundColor: Color(0xFF0F1E2B),
-        selectedItemColor: Color(0xFF12273C),
-        unselectedItemColor: Color(0xFF778BA8),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
 
@@ -161,7 +199,8 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(BuildContext context, String title, Widget content,VoidCallback onPressed) {
+  // Méthode pour construire une section avec un titre, du contenu et un bouton "Voir plus"
+  Widget _buildSection(BuildContext context, String title, Widget content, VoidCallback onPressed) {
     return Container(
       color: Color(0xFF1E3243),
       child: Column(
@@ -173,24 +212,41 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
+
 class SeriesList extends StatelessWidget {
+  final Stream<List<SeriesInfo>> seriesStream;
+
+  SeriesList(this.seriesStream);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 150.0,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: <Widget>[
-          SeriesItem(title: 'Titans', assetName: 'S1.png'),
-          SeriesItem(title: 'Young Justice: Outsiders', assetName: 'S2.png'),
-          SeriesItem(title: 'Autre série', assetName: 'S3.jpeg'),
-          // Ajoutez d'autres éléments ici si nécessaire
-        ],
-      ),
+    return StreamBuilder<List<SeriesInfo>>(
+      stream: seriesStream, // Utilisez le flux de données seriesStream
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Affichez un indicateur de chargement en attendant les données
+        } else if (snapshot.hasError) {
+          return Text('Erreur: ${snapshot.error}'); // Affichez un message d'erreur s'il y a une erreur
+        } else if (snapshot.hasData) {
+          final seriesList = snapshot.data!; // Récupérez les données
+          return Container(
+            height: 150.0,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: seriesList.length,
+              itemBuilder: (context, index) {
+                final series = seriesList[index];
+                return SeriesItem(name: series.name, imageUrl: series.imageUrl);
+              },
+            ),
+          );
+        } else {
+          return SizedBox(); // Placeholder
+        }
+      },
     );
   }
 }
-
 class SectionHeader extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
@@ -239,43 +295,78 @@ class SectionHeader extends StatelessWidget {
 }
 
 class ComicsList extends StatelessWidget {
+  final Stream<List<ComicInfo>> comicsStream;
+
+  ComicsList(this.comicsStream);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 150.0,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: <Widget>[
-          ComicsItem(title: 'The Silver Surfer', assetName: 'C1.png'),
-          ComicsItem(title: 'Wonder Woman #89', assetName: 'C2.png'),
-          ComicsItem(title: 'Autre comic', assetName: 'C3.jpeg'), // Supposons que C3.png soit un autre asset
-          // Ajoutez d'autres éléments ici si nécessaire
-        ],
-      ),
+    return StreamBuilder<List<ComicInfo>>(
+      stream: comicsStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Erreur: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          final comicsList = snapshot.data!;
+          return Container(
+            height: 150.0,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: comicsList.length,
+              itemBuilder: (context, index) {
+                final comic = comicsList[index];
+                return ComicsItem(volume: comic.volumeName, number: comic.number, name: comic.name , imageUrl: comic.imageUrl,);
+              },
+            ),
+          );
+        } else {
+          return SizedBox();
+        }
+      },
     );
   }
 }
-class FilmList extends StatelessWidget {
+class MoviesList extends StatelessWidget {
+  final Stream<List<MovieInfo>> moviesStream;
+
+  MoviesList(this.moviesStream);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 150.0,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: <Widget>[
-          FilmItem(title: 'Iron Man', assetName: 'F1.png'),
-          FilmItem(title: 'X-Men', assetName: 'F2.png'),
-          FilmItem(title: 'Autre film', assetName: 'F3.jpeg'),
-          // Ajoutez d'autres éléments ici si nécessaire
-        ],
-      ),
+    return StreamBuilder<List<MovieInfo>>(
+      stream: moviesStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Erreur: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          final moviesList = snapshot.data!;
+          return Container(
+            height: 150.0,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: moviesList.length,
+              itemBuilder: (context, index) {
+                final movie = moviesList[index];
+                return FilmItem(name: movie.name, imageUrl: movie.imageUrl);
+              },
+            ),
+          );
+        } else {
+          return SizedBox();
+        }
+      },
     );
   }
 }
+
 class SeriesItem extends StatelessWidget {
-  final String title;
-  final String assetName;
-  SeriesItem({required this.title, required this.assetName});
+  final String name;
+  final String imageUrl;
+  SeriesItem({required this.name, required this.imageUrl});
   @override
   Widget build(BuildContext context) {
     // Utiliser un Container pour définir des dimensions fixes
@@ -291,12 +382,12 @@ class SeriesItem extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-              child: Image.asset('assets/$assetName', height: 100), // Hauteur fixe pour l'image
+              child: Image.network(imageUrl, height: 100), // Utilisez Image.network pour charger l'image à partir de l'URL
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                title,
+                name,
                 style: TextStyle(color: Colors.white),
                 textAlign: TextAlign.center,
               ),
@@ -308,9 +399,11 @@ class SeriesItem extends StatelessWidget {
   }
 }
 class ComicsItem extends StatelessWidget {
-  final String title;
-  final String assetName;
-  ComicsItem({required this.title, required this.assetName});
+  final String volume;
+  final String number ;
+  final String name ;
+  final String imageUrl;
+  ComicsItem({required this.volume, required this.number, required this.name, required this.imageUrl});
   @override
   Widget build(BuildContext context) {
     // Utiliser un Container pour définir des dimensions fixes
@@ -326,12 +419,12 @@ class ComicsItem extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-              child: Image.asset('assets/$assetName', height: 100), // Hauteur fixe pour l'image
+              child: Image.network(imageUrl, height: 100), // Hauteur fixe pour l'image
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                title,
+                '${volume} #${number} - ${name}',
                 style: TextStyle(color: Colors.white),
                 textAlign: TextAlign.center, // Centrer le titre
               ),
@@ -343,9 +436,9 @@ class ComicsItem extends StatelessWidget {
   }
 }
 class FilmItem extends StatelessWidget {
-  final String title;
-  final String assetName;
-  FilmItem({required this.title, required this.assetName});
+  final String name;
+  final String imageUrl;
+  FilmItem({required this.name, required this.imageUrl});
   @override
   Widget build(BuildContext context) {
     // Utiliser un Container pour définir des dimensions fixes
@@ -362,12 +455,12 @@ class FilmItem extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-              child: Image.asset('assets/$assetName', height: 100), // Hauteur fixe pour l'image
+              child: Image.network(imageUrl, height: 100), // Hauteur fixe pour l'image
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                title,
+                name,
                 style: TextStyle(color: Colors.white),
                 textAlign: TextAlign.center, // Centrer le titre
               ),

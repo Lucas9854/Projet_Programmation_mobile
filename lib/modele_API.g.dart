@@ -58,6 +58,7 @@ ComicsResponse _$ComicsResponseFromJson(Map<String, dynamic> json) =>
           ? null
           : Volume.fromJson(json['volume'] as Map<String, dynamic>),
       json['cover_date'] as String?,
+      json['description'] as String?,
       json['image'] == null
           ? null
           : ImageApi.fromJson(json['image'] as Map<String, dynamic>),
@@ -69,6 +70,7 @@ Map<String, dynamic> _$ComicsResponseToJson(ComicsResponse instance) =>
       'issue_number': instance.issuesNumber,
       'volume': instance.volume,
       'cover_date': instance.coverDate,
+      'description': instance.description,
       'image': instance.image,
     };
 

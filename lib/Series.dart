@@ -4,7 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:application_comics/comics_api.dart';
 import 'package:application_comics/modele_API.dart';
 import 'DetailSerie.dart';
-
+import 'Films.dart';
+import 'main.dart';
+import 'Comics.dart';
+import 'Recherche.dart';
 
 
 class SeriesPage extends StatelessWidget {
@@ -82,6 +85,36 @@ class SeriesBloc {
       _seriesController.addError('Erreur lors du chargement des séries');
     }
   }
+  void loadFirstFiveSeries() async {
+    try {
+      print('Chargement des séries en cours...');
+      final List<SeriesResponse> seriesListResponse =
+      await ComicsRequest().loadSeriesList('series_list');
+      if (seriesListResponse.isNotEmpty) {
+        final List<SeriesInfo> seriesInfoList = seriesListResponse.asMap().map((index, series) {
+          final seriesInfo = SeriesInfo(
+            name: series.name,
+            publisherName: series.publisher?.name ?? '',
+            countOfEpisodes: series.countOfEpisodes,
+            startYear: series.startYear,
+            imageUrl: series.image?.screenUrl ?? '',
+            description: series.description ?? '',
+            rank: index + 1,
+          );
+          return MapEntry(index, seriesInfo);
+        }).values.toList();
+
+        _seriesController.add(seriesInfoList.take(5).toList());
+      }
+      else {
+        print('La réponse de l\'API est vide.');
+      }
+    } catch (e) {
+      print('Erreur lors du chargement des séries : $e');
+      _seriesController.addError('Erreur lors du chargement des séries');
+    }
+  }
+
 
   void dispose() {
     _seriesController.close();
@@ -98,6 +131,71 @@ class HomePage extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Color(0xFF15232E),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_home.svg', width: 24, height: 24, color : Color(0xFF778BA8)),
+            label: 'Accueil',
+
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_series.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
+            label: 'Séries',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_comics.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
+            label: 'Comics',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_movies.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
+            label: 'Films',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset('res/svg/navbar_search.svg', width: 24, height: 24,color : Color(0xFF778BA8)),
+            label: 'Recherche',
+          ),
+        ],
+        backgroundColor: Color(0xFF0F1E2B),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        onTap: (int index) {
+
+          switch (index) {
+            case 0: // Accueil
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyApp()), // Naviguer vers la page d'accueil
+              );
+              break;
+            case 1:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SeriesPage()),
+              ); // Naviguer vers la page des séries
+              break;
+            case 2: // Comics
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ComicsPage()),
+              );
+              break;
+            case 3: // Films
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MoviesPage()),
+              );
+              break;
+            case 4: // Recherche
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchScreen()),
+              );
+              break;
+            default:
+          }
+        },
       ),
       body: StreamBuilder<List<SeriesInfo>>(
         stream: SeriesBloc().seriesStream,
@@ -121,6 +219,7 @@ class HomePage extends StatelessWidget {
                   },
                   child: SeriesInfoWidget(
                     seriesInfo: seriesInfo,
+
                     onTap: () {
                       // Do nothing on tap of the button inside SeriesInfoWidget
                     },

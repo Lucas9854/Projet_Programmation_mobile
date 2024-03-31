@@ -101,10 +101,13 @@ class ComicsResponse {
   @JsonKey(name: 'cover_date')
   final String? coverDate;
 
+  @JsonKey(name: 'description')
+  final String? description;
+
   @JsonKey(name: 'image')
   final ImageApi? image;
 
-  ComicsResponse(this.name, this.issuesNumber , this.volume, this.coverDate, this.image);
+  ComicsResponse(this.name, this.issuesNumber , this.volume, this.coverDate, this.description, this.image);
 
   factory ComicsResponse.fromJson(Map<String, dynamic> json) {
     final imageJson = json['image'];
@@ -118,6 +121,7 @@ class ComicsResponse {
       json['issue_number'] as String?,
       volume,
       json['cover_date'] as String?,
+      json['description'] as String?,
       image,
     );
   }
@@ -149,7 +153,7 @@ class CharactersResponse {
   @JsonKey(name: 'image')
   final ImageApi? image;
 
-  CharactersResponse(this.name, this.realName , this.alias, this.deck, this.gender, this.birth , this.image);
+  CharactersResponse(this.name, this.realName , this.alias, this.deck, this.gender, this.birth ,  this.image);
 
   factory CharactersResponse.fromJson(Map<String, dynamic> json) {
     final imageJson = json['image'];

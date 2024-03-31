@@ -10,7 +10,7 @@ class CharactersBloc {
   Stream<List<CharactersInfo>> get characterStream => _charactersController.stream;
 
   CharactersBloc() {
-    loadCharacters(); // Chargez les personnages lorsque le bloc est créé
+    loadCharacters(); // Chargement des personnages
   }
 
   void loadCharacters() async {
