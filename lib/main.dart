@@ -71,6 +71,8 @@ class MyHomePage extends StatelessWidget {
                       'Bienvenue !',
                       style: TextStyle(
                         color: Colors.white,
+                        fontWeight: FontWeight.bold,
+
 
                         fontSize: 35.0,
                       ),
